@@ -1,0 +1,414 @@
+import pygame, sys
+import time
+import random
+from pygame.locals import *
+from pygame import mixer
+
+pygame.init()
+
+FPS = 15
+
+BLACK = (0, 0, 0)
+GREEN = (107, 203, 119)
+RED = (255, 107, 107)
+BLUE = (77, 150, 255)
+YELLOW = (255, 217, 61)
+
+FOREST =(31, 171, 137)
+NEWGREEN = (197, 216, 164)
+WOOD = (83, 67, 64)
+PINK =(255, 123, 169)
+PURPLE = (63, 0, 113)
+
+WINDOW_WIDTH = 900
+WINDOW_HEIGHT = 600
+TOP_WIDTH = 40
+
+small_font = pygame.font.SysFont('Georgia', 25)
+medium_font = pygame.font.SysFont('Georgia', 20, True)
+large_font = pygame.font.SysFont('Georgia', 40, True, True)
+
+garden_img = pygame.image.load('garden.jpg')
+
+pygame.display.set_caption('Vixens Little Garden')
+canvas = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+
+clock = pygame.time.Clock()
+
+def start_game():
+
+    #mixer.init()
+    #mixer.music.load('sodikken - Misery Meat.ogg')
+    #mixer.music.play()
+    
+    garden_img = pygame.image.load('garden1.png')
+    garden_img = pygame.transform.scale(garden_img,(WINDOW_WIDTH,WINDOW_HEIGHT))
+    
+    start_font1 = large_font.render("Vixens Little Garden", True, NEWGREEN, FOREST)
+    start_font2 = medium_font.render("Play", True, PURPLE, FOREST)
+    start_font3 = medium_font.render("Instructions", True, PURPLE, FOREST)
+    start_font4 = medium_font.render("Quit", True, RED, FOREST)
+
+    start_font1_rect = start_font1.get_rect()
+    start_font2_rect = start_font2.get_rect()
+    start_font3_rect = start_font3.get_rect()
+    start_font4_rect = start_font4.get_rect()
+
+    start_font1_rect.center = (WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 100)
+    start_font2_rect.center = (WINDOW_WIDTH/2 + 100, WINDOW_HEIGHT/2 + 50)
+    start_font3_rect.center = (WINDOW_WIDTH/2 + 100, WINDOW_HEIGHT/2 + 100)
+    start_font4_rect.center = (WINDOW_WIDTH/2 + 100, WINDOW_HEIGHT/2 + 150)
+
+    canvas.blit(garden_img,(0,0))
+
+    canvas.blit(start_font1, start_font1_rect)
+    canvas.blit(start_font2, start_font2_rect)
+    canvas.blit(start_font3, start_font3_rect)
+    canvas.blit(start_font4, start_font4_rect)
+    pygame.display.update()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    gameloop()
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                
+                if x > start_font3_rect.left and x < start_font3_rect.right:
+                    if y > start_font3_rect.top and y < start_font3_rect.bottom:
+                        start_inst(start_font1, start_font1_rect)
+
+                if x > start_font2_rect.left and x < start_font2_rect.right:
+                    if y > start_font2_rect.top and y < start_font2_rect.bottom:
+                        gameloop()
+                        
+                if x > start_font4_rect.left and x < start_font4_rect.right:
+                    if y > start_font4_rect.top and y < start_font4_rect.bottom:
+                        pygame.quit()
+                        sys.exit()
+
+def start_inst(start_font1, start_font1_rect):
+
+    canvas.fill(GREEN)
+    canvas.blit(start_font1, start_font1_rect)
+
+    start_inst1 = small_font.render("--> Do not cross the edges of the garden!", True, PINK, NEWGREEN)
+    start_inst2 = small_font.render("--> Keep eating the red apples           ", True, PINK, NEWGREEN)
+    start_inst3 = small_font.render("--> ONLY the red apples                  ", True, RED, NEWGREEN)
+    start_inst4 = small_font.render("--> Do not cross over yourself           ", True, PINK, NEWGREEN)
+    start_inst5 = small_font.render("--> Just keep wondering around...        ", True, PINK, NEWGREEN)
+    start_inst6 = medium_font.render("<<BACK", True, RED, NEWGREEN)
+
+    start_inst6_rect = start_inst6.get_rect()
+    start_inst6_rect.center = (WINDOW_WIDTH - 100, WINDOW_HEIGHT - 100)
+
+    canvas.blit(start_inst1, (WINDOW_WIDTH/8, WINDOW_HEIGHT/2))
+    canvas.blit(start_inst2, (WINDOW_WIDTH/8, WINDOW_HEIGHT/2 + 30))
+    canvas.blit(start_inst3, (WINDOW_WIDTH/8, WINDOW_HEIGHT/2 + 60))
+    canvas.blit(start_inst4, (WINDOW_WIDTH/8, WINDOW_HEIGHT/2 + 90))
+    canvas.blit(start_inst5, (WINDOW_WIDTH/8, WINDOW_HEIGHT/2 + 120))
+    canvas.blit(start_inst6, start_inst6_rect)
+
+    pygame.display.update()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y = event.pos
+                if x > start_inst6_rect.left and x < start_inst6_rect.right:
+                    if y > start_inst6_rect.top and y < start_inst6_rect.bottom:
+                        start_game()
+
+        pygame.display.update()
+
+def gameover():
+
+    font_gameover1 = large_font.render('GAME OVER', True, GREEN)
+    font_gameover2 = medium_font.render("Play Again", True, PURPLE, NEWGREEN)
+    font_gameover3 = medium_font.render("Quit", True, RED, NEWGREEN)
+
+    font_gameover1_rect = font_gameover1.get_rect()
+    font_gameover2_rect = font_gameover2.get_rect()
+    font_gameover3_rect = font_gameover3.get_rect()
+
+    font_gameover1_rect.center = (WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 100)
+    font_gameover2_rect.center = (WINDOW_WIDTH/2 + 150, WINDOW_HEIGHT/2 + 20)
+    font_gameover3_rect.center = (WINDOW_WIDTH/2 + 150, WINDOW_HEIGHT/2 + 70)
+
+    canvas.blit(font_gameover1, font_gameover1_rect)
+    canvas.blit(font_gameover2, font_gameover2_rect)
+    canvas.blit(font_gameover3, font_gameover3_rect)
+
+    pygame.display.update()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x, y, = event.pos
+                if x > font_gameover2_rect.left and x < font_gameover2_rect.right:
+                    if y > font_gameover2_rect.top and y < font_gameover2_rect.bottom:
+                        gameloop()
+
+                if x > font_gameover3_rect.left and x < font_gameover3_rect.right:
+                    if y > font_gameover3_rect.top and y < font_gameover3_rect.bottom:
+                        pygame.quit()
+                        sys.exit()
+
+        pygame.display.update()
+
+def game_paused():
+    
+    paused_font1 = large_font.render("Game Paused", True, RED)
+    paused_font_rect1 = paused_font1.get_rect()
+    paused_font_rect1.center = (WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
+    canvas.blit(paused_font1, paused_font_rect1)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pause_xy = event.pos
+                if pause_xy[0] > (WINDOW_WIDTH - 50) and pause_xy[0] < WINDOW_WIDTH:
+                    if pause_xy[1] > 0 and pause_xy[1] < 50:
+                         return
+        pygame.display.update()
+
+def gameloop():
+    mixer.init()
+    mixer.music.load('vix.wav')
+    mixer.music.play()
+    snake_speed = 15
+    #position snake
+    snake_position = [100, 50]
+    #first 4 blocks of snake
+    #body
+    snake_body = [ [100, 50], [90, 50], [80, 50], [70, 50]]
+    #fruit position
+    fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+    fruit_spawn = True
+    
+    bad_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+    bad_fruit_spawn = True
+
+    bad1_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+    bad1_fruit_spawn = True
+
+    bad2_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+    bad2_fruit_spawn = True
+
+    bad3_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+    bad3_fruit_spawn = True
+
+    bad4_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+    bad4_fruit_spawn = True
+    
+    #default snake direction
+    #right
+    direction = 'RIGHT'
+    change_to = direction
+    #score
+    score = 0
+    score_display = small_font.render("Score:" + str(score), True, NEWGREEN)
+    pause_font = medium_font.render('II', True, FOREST)
+
+    while True:
+        # handling key events
+        for event in pygame.event.get():
+
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    change_to = 'UP'
+                if event.key == pygame.K_DOWN:
+                    change_to = 'DOWN'
+                if event.key == pygame.K_LEFT:
+                    change_to = 'LEFT'
+                if event.key == pygame.K_RIGHT:
+                    change_to = 'RIGHT'
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pause_xy = event.pos
+                if pause_xy[0] > (WINDOW_WIDTH - 50) and pause_xy[0] < WINDOW_WIDTH:
+                    if pause_xy[1] > 0 and pause_xy[1] < 50:
+                        game_paused()
+
+        # If two keys pressed simultaneously
+        # we don't want snake to move into two directions
+        # simultaneously
+        if change_to == 'UP' and direction != 'DOWN':
+            direction = 'UP'
+        if change_to == 'DOWN' and direction != 'UP':
+            direction = 'DOWN'
+        if change_to == 'LEFT' and direction != 'RIGHT':
+            direction = 'LEFT'
+        if change_to == 'RIGHT' and direction != 'LEFT':
+            direction = 'RIGHT'
+
+        # Moving the snake
+        if direction == 'UP':
+            snake_position[1] -= 10
+        if direction == 'DOWN':
+            snake_position[1] += 10
+        if direction == 'LEFT':
+            snake_position[0] -= 10
+        if direction == 'RIGHT':
+            snake_position[0] += 10
+
+        # Snake body growing mechanism
+        # if fruits and snakes collide then scores will be
+        # incremented by 10
+        snake_body.insert(0, list(snake_position))
+        if snake_position[0] == fruit_position[0] and snake_position[1] == fruit_position[1]:
+            score += 10
+            score_display = small_font.render("Score:" + str(score), True, NEWGREEN)
+            fruit_spawn = False
+        else:
+            snake_body.pop()
+
+        if not fruit_spawn:
+            fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+            if score >= 20:
+                bad_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+            if score >= 40:
+                bad1_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+            if score >= 60:
+                bad2_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+            if score >= 80:
+                bad3_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+            if score >= 100:
+                bad4_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+
+        fruit_spawn = True
+
+        if score >= 20:
+            bad_fruit_spawn = True
+            if snake_position[0] == bad_fruit_position[0] and snake_position[1] == bad_fruit_position[1]:
+                gameover()
+                score_display = small_font.render("Score:" + str(score), True, NEWGREEN)
+                bad_fruit_spawn = False
+
+            if not bad_fruit_spawn:
+                bad_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+
+            bad_fruit_spawn = True
+
+        if score >= 40:
+            bad1_fruit_spawn = True
+            if snake_position[0] == bad1_fruit_position[0] and snake_position[1] == bad1_fruit_position[1]:
+                gameover()
+                score_display = small_font.render("Score:" + str(score), True, NEWGREEN)
+                bad1_fruit_spawn = False
+
+            if not bad1_fruit_spawn:
+                bad1_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+
+            bad1_fruit_spawn = True
+
+        if score >= 60:
+            bad2_fruit_spawn = True
+            if snake_position[0] == bad2_fruit_position[0] and snake_position[1] == bad2_fruit_position[1]:
+                gameover()
+                score_display = small_font.render("Score:" + str(score), True, NEWGREEN)
+                bad2_fruit_spawn = False
+
+            if not bad2_fruit_spawn:
+                bad2_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+
+            bad2_fruit_spawn = True
+
+        if score >= 80:
+            bad3_fruit_spawn = True
+            if snake_position[0] == bad3_fruit_position[0] and snake_position[1] == bad3_fruit_position[1]:
+                gameover()
+                score_display = small_font.render("Score:" + str(score), True, NEWGREEN)
+                bad3_fruit_spawn = False
+
+            if not bad3_fruit_spawn:
+                bad3_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+
+            bad3_fruit_spawn = True
+
+        if score >= 100:
+            bad4_fruit_spawn = True
+            if snake_position[0] == bad4_fruit_position[0] and snake_position[1] == bad4_fruit_position[1]:
+                gameover()
+                score_display = small_font.render("Score:" + str(score), True, NEWGREEN)
+                bad4_fruit_spawn = False
+
+            if not bad4_fruit_spawn:
+                bad4_fruit_position = [random.randrange(0, WINDOW_WIDTH - 10, 10), random.randrange(TOP_WIDTH, WINDOW_HEIGHT - 10, 10)]
+
+            bad4_fruit_spawn = True
+
+        canvas.fill(WOOD)
+
+        for pos in snake_body:
+            pygame.draw.rect(canvas, NEWGREEN, pygame.Rect(pos[0], pos[1], 10, 10))
+
+        pygame.draw.rect(canvas, RED, pygame.Rect(fruit_position[0], fruit_position[1], 10, 10))
+
+        if score >= 20:
+            pygame.draw.rect(canvas, PURPLE, pygame.Rect(bad_fruit_position[0], bad_fruit_position[1], 10, 10))
+
+        if score >= 40:
+            pygame.draw.rect(canvas, PINK, pygame.Rect(bad1_fruit_position[0], bad1_fruit_position[1], 10, 10))
+
+        if score >= 60:
+            pygame.draw.rect(canvas, PURPLE, pygame.Rect(bad2_fruit_position[0], bad2_fruit_position[1], 10, 10))
+
+        if score >= 80:
+            pygame.draw.rect(canvas, PINK, pygame.Rect(bad3_fruit_position[0], bad3_fruit_position[1], 10, 10))
+
+        if score >= 100:
+            snake_speed = random.randint(15,30)
+            pygame.draw.rect(canvas, PURPLE, pygame.Rect(bad4_fruit_position[0], bad4_fruit_position[1], 10, 10))
+
+        # Game Over conditions
+        if snake_position[0] < 0 or snake_position[0] > WINDOW_WIDTH-10:
+            gameover()
+        if snake_position[1] < 40 or snake_position[1] > WINDOW_HEIGHT-10:
+            gameover()
+
+        # Touching the snake body
+        for block in snake_body[1:]:
+            if snake_position[0] == block[0] and snake_position[1] == block[1]:
+                gameover()
+        # displaying score countinuously
+        #show_score(1, YELLOW, 'times new roman', 20)
+        pygame.draw.line(canvas, GREEN, (0, TOP_WIDTH), (WINDOW_WIDTH, TOP_WIDTH))
+        pygame.draw.line(canvas, PINK, (WINDOW_WIDTH - 60, 0), (WINDOW_WIDTH - 60, TOP_WIDTH))
+        pygame.draw.rect(canvas, PINK, (WINDOW_WIDTH - 60, 0, 60, TOP_WIDTH))
+        canvas.blit(score_display, (WINDOW_WIDTH/2, 10))
+        canvas.blit(pause_font, (WINDOW_WIDTH - 45, 10))
+
+        # Refresh game screen
+        pygame.display.update()
+
+        # Frame Per Second /Refresh Rate
+        clock.tick(snake_speed)
+
+        
+
+start_game()
+gameloop()
